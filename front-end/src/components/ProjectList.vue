@@ -3,8 +3,8 @@
     <div class="projects">
       <div class="project" v-for="project in projects" :key="project.id">
         <p class="project-title">{{ project.title }}</p>
-        <img class="image" :src="'images/' + project.image" />
-        <p class="project-description" v-bind="project.description">
+        <img class="image" :src="project.path" />
+        <p class="project-description">
           {{ project.description }}
         </p>
       </div>
@@ -13,10 +13,28 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ProjectList',
-  props: {
-    projects: Array,
+  data() {
+    return {
+      projects: [],
+    };
+  },
+  created() {
+    this.getItems();
+  },
+  methods: {
+    async getItems() {
+      try {
+        let response = await axios.get('/api/project');
+        this.projects = response.data;
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 };
 </script>

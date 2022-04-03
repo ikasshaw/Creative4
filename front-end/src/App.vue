@@ -37,11 +37,13 @@
     <router-view />
 
     <footer>
-      <a target="_blank" href="https://github.com/ikasshaw/PersonalSite.git">
+      <router-link to="/admin">Admin</router-link>
+      <a target="_blank" href="https://github.com/ikasshaw/Creative4.git">
         <img
           src="../src/assets/images/GitHub-Mark-Light-64px.png"
           alt="Github icon" />
       </a>
+      <div class="empty"></div>
     </footer>
   </div>
 </template>
@@ -52,9 +54,10 @@
   padding: 0;
   box-sizing: border-box;
 }
-
-#app,
 html {
+  overflow: hidden;
+}
+#app {
   display: flex;
   flex-direction: column;
   background-image: linear-gradient(
@@ -69,15 +72,21 @@ html {
   font-family: 'Montserrat', 'Open Sans', 'Roboto', 'Helvetica Neue', sans-serif;
   font-size: 16px;
   color: #e6e8e6;
-  /*overflow-scrolling: auto;*/
+  overflow-x: hidden;
+  overflow-y: scroll;
   margin: 0;
 }
+
 nav {
   padding: 30px;
 }
 
 nav a {
   font-weight: bold;
+}
+
+::-webkit-scrollbar {
+  width: 0;
 }
 
 h2 {
@@ -100,9 +109,9 @@ hr {
 
 footer {
   background-color: #071013;
-  width: 100vw;
+  width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 15px;
 }

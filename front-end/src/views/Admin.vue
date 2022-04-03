@@ -1,9 +1,8 @@
 <template>
   <div class="admin">
-    <h1>The Admin Page!</h1>
+    <h2>Add Or Edit A Project</h2>
     <div class="heading">
-      <div class="circle">1</div>
-      <h2>Add an Item</h2>
+      <h3>Add an Item</h3>
     </div>
     <div class="add">
       <div class="form">
@@ -12,17 +11,19 @@
         <textarea v-model="description" placeholder="Description" />
         <p></p>
         <input type="file" name="photo" @change="fileChanged" />
+        <p></p>
         <button @click="upload">Upload</button>
       </div>
       <div class="upload" v-if="addItem">
-        <h2>{{ addItem.title }}</h2>
+        <h3>{{ addItem.title }}</h3>
         <p>{{ description }}</p>
         <img :src="addItem.path" />
       </div>
     </div>
+    <p></p>
+    <p></p>
     <div class="heading">
-      <div class="circle">2</div>
-      <h2>Edit/Delete an Item</h2>
+      <h3>Edit/Delete an Item</h3>
     </div>
     <div class="edit">
       <div class="form">
@@ -37,23 +38,37 @@
           </div>
         </div>
       </div>
+      <p></p>
+      <p></p>
       <div class="upload" v-if="findItem">
         <input v-model="findItem.title" />
         <p></p>
-        <textarea v-model="findItem.description" />
+        <textarea id="editDescription" v-model="findItem.description" />
         <p></p>
         <img :src="findItem.path" />
       </div>
+      <p></p>
+
       <div class="actions" v-if="findItem">
         <button @click="deleteItem(findItem)">Delete</button>
         <button @click="editItem(findItem)">Edit</button>
       </div>
+    </div>
+
+    <h2>Contacts</h2>
+
+    <div class="contacts" v-for="contact in contacts" :key="contact.id">
+      <Contact :contact="contact"></Contact>
+      <button v-bind:key="contact.id" @click="deleteContact(contact)">
+        Delete
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Contact from '../components/Contact';
 export default {
   name: 'Admin',
   data() {
@@ -61,12 +76,19 @@ export default {
       title: '',
       file: null,
       addItem: null,
-      items: [],
+      contacts: [],
+      projects: [],
       findTitle: '',
       findItem: null,
       description: '',
+      buttonId: '',
     };
   },
+
+  components: {
+    Contact,
+  },
+
   created() {
     this.getItems();
   },
@@ -79,7 +101,7 @@ export default {
         const formData = new FormData();
         formData.append('photo', this.file, this.file.name);
         let r1 = await axios.post('/api/photos', formData);
-        let r2 = await axios.post('/api/items', {
+        let r2 = await axios.post('/api/project', {
           title: this.title,
           description: this.description,
           path: r1.data.path,
@@ -91,20 +113,22 @@ export default {
     },
     async getItems() {
       try {
-        let response = await axios.get('/api/items');
-        this.items = response.data;
+        let response = await axios.get('/api/contact');
+        this.contacts = response.data;
+        response = await axios.get('/api/project');
+        this.projects = response.data;
         return true;
       } catch (error) {
         console.log(error);
       }
     },
-    selectItem(item) {
+    selectItem(project) {
       this.findTitle = '';
-      this.findItem = item;
+      this.findItem = project;
     },
     async deleteItem(item) {
       try {
-        await axios.delete('/api/items/' + item._id);
+        await axios.delete('/api/project/' + item._id);
         this.findItem = null;
         await this.getItems();
         return true;
@@ -114,7 +138,7 @@ export default {
     },
     async editItem(item) {
       try {
-        await axios.put('/api/items/' + item._id, {
+        await axios.put('/api/project/' + item._id, {
           title: this.findItem.title,
           description: this.findItem.description,
         });
@@ -125,19 +149,37 @@ export default {
         console.log(error);
       }
     },
+    async deleteContact(item) {
+      try {
+        await axios.delete('/api/contact/' + item._id);
+        this.findItem = null;
+        await this.getItems();
+        return true;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   computed: {
     suggestions() {
-      let items = this.items.filter(item =>
+      let items = this.projects.filter(item =>
         item.title.toLowerCase().startsWith(this.findTitle.toLowerCase())
       );
-      return items.sort((a, b) => a.title > b.title);
+      return items.sort((a, b) => a.name > b.name);
     },
   },
 };
 </script>
 
 <style scoped>
+.admin {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  /*justify-content: center;*/
+  align-items: center;
+}
+
 .image h2 {
   font-style: italic;
   font-size: 1em;
@@ -157,6 +199,11 @@ export default {
 .add,
 .edit {
   display: flex;
+  flex-direction: column;
+  /*justify-self: center;*/
+  justify-content: center;
+  width: 75%;
+  margin-bottom: 30px;
 }
 
 .circle {
@@ -175,14 +222,27 @@ textarea,
 select,
 button {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1em;
+  font-size: 1.25em;
+  width: 100%;
+  height: fit-content;
 }
 
-.form {
-  margin-right: 50px;
+button {
+  background-color: #afecaf;
+  border: 0;
+  padding: 5px;
+  height: 45px;
+  border-radius: 3px;
 }
 
-/* Uploaded images */
+.upload {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
 .upload h2 {
   margin: 0;
 }
@@ -193,7 +253,7 @@ button {
 
 /* Suggestions */
 .suggestions {
-  width: 200px;
+  /*width: 200px;*/
   border: 1px solid #ccc;
 }
 
@@ -202,7 +262,41 @@ button {
 }
 
 .suggestion:hover {
-  background-color: #5bdeff;
+  background-color: #58a4b0;
   color: #fff;
+}
+
+.actions button:first-child {
+  background-color: #d64933;
+}
+
+.actions button {
+  width: 33%;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-evenly;
+  height: 30px;
+}
+
+#editDescription {
+  min-height: 200px;
+}
+
+textarea::-webkit-scrollbar {
+  width: 5px;
+  resize: vertical;
+  background-color: transparent;
+}
+
+.contacts {
+  width: 90%;
+  padding: 5px;
+  border: #777777 2px solid;
+  margin: 5px;
+}
+.contacts button {
+  background-color: #d64933;
 }
 </style>

@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue';
 import ProjectsView from '../views/ProjectsView';
 import AboutView from '../views/AboutView';
 import ContactView from '../views/ContactView';
+import Admin from '../views/Admin';
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: ContactView,
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: Admin,
   },
 ];
 
