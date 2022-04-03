@@ -7,8 +7,8 @@ const fs = require('fs')
 
 // Configure multer so that it will upload to '../front-end/public/images'
 const upload = multer({
-    // dest: '/var/www/c4.isaacshaw.net/images/',
-    dest: '../front-end/public/images/',
+    dest: '/var/www/creative4.isaacshaw.net/images/',
+    // dest: '../front-end/public/images/',
     limits: {
         fileSize: 10000000
     }
@@ -142,13 +142,13 @@ app.delete('/api/project/:id', async (req, res) => {
             _id: req.params.id
         });
 
-        // const path = "/var/www/c4.isaacshaw.net" + item.path;
+        const path = "/var/www/creative4.isaacshaw.net" + item.path;
 
-        // await fs.unlink(path, (err) => {
-        //     if (err) {
-        //         console.error(err)
-        //     }
-        // });
+        await fs.unlink(path, (err) => {
+            if (err) {
+                console.error(err)
+            }
+        });
 
         res.sendStatus(200);
     } catch (error) {
